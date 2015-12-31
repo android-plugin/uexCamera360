@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar','*.aar'])
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile(name: 'Engine-release', ext: 'aar')
+    //compile(name: 'Engine-release', ext: 'aar')
     //compile(name: 'PG_Edit_SDK-debug', ext: 'aar')
 }
 
@@ -17,6 +17,10 @@ android {
     buildToolsVersion "23.0.0"
     lintOptions {
         abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
     sourceSets {
         main {
