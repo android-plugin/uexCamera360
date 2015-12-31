@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uexplugins>
+    <plugin
+        className="org.zywx.wbpalmstar.plugin.uexcamera360.EUExCamera360" uexName="uexCamera360" >
+        <method name="pick" type="1"/>
+        <method name="edit" type="1"/>
+    </plugin>
+</uexplugins>

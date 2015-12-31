@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <application>
+        <!--uexCamera360-->
+        <activity
+            android:name="org.zywx.wbpalmstar.plugin.uexcamera360.StartEditActivity"/>
+        <activity
+            android:name="us.pinguo.edit.sdk.PGEditActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
+        <service
+            android:name="us.pinguo.bigdata.BDUpService"
+            android:process=":bdupload">
+        </service>
+
+        <receiver android:name="us.pinguo.bigdata.BDAlarmReceiver">
+            <intent-filter>
+                <action android:name="bd_alarm"/>
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="BD_APP_ID"
+            android:value="ea8d04692735bc1f"/>
+        <meta-data
+            android:name="BD_APP_SECRET"
+            android:value="vCGG9QZ94tcGxTjangCc_b_VuXwmfGd2"/>
+
+        <meta-data
+            android:name="EDIT_SDK_KEY"
+            android:value="$uexCamera360_APIKey$"/>
+
+    </application>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+</manifest>
