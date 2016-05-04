@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,12 +13,12 @@ import org.zywx.wbpalmstar.base.BUtility;
 import org.zywx.wbpalmstar.engine.DataHelper;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
-import org.zywx.wbpalmstar.engine.universalex.EUExUtil;
 import org.zywx.wbpalmstar.plugin.uexcamera360.vo.EditDataVO;
 import org.zywx.wbpalmstar.plugin.uexcamera360.vo.ResultEditVO;
 import org.zywx.wbpalmstar.widgetone.WidgetOneApplication;
 
 import java.io.File;
+import java.io.IOException;
 
 import us.pinguo.edit.sdk.PGEditImageLoader;
 import us.pinguo.edit.sdk.base.PGEditResult;
@@ -90,6 +91,7 @@ public class EUExCamera360 extends EUExBase {
         if (TextUtils.isEmpty(path)){
             startPickPic();
         }else{
+            path = getRealPath(path); //获取在文件系统中的绝对路径，针对res://开头的图片，会拷到/sdcard中
             if(!path.startsWith(File.separator)){
                 ResultEditVO editVO = new ResultEditVO();
                 editVO.setErrorCode(JsConst.CALLBACK_ERROR_CODE_ERROR_FILE_PATH);
@@ -215,6 +217,49 @@ public class EUExCamera360 extends EUExBase {
                 break;
             default:
                 break;
+        }
+    }
+
+    public String getRealPath(String path){
+        String realPath=BUtility.makeRealPath(
+                BUtility.makeUrl(mBrwView.getCurrentUrl(), path),
+                mBrwView.getCurrentWidget().m_widgetPath,
+                mBrwView.getCurrentWidget().m_wgtType);
+
+        String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+
+        //先将assets文件写入到临时文件夹中
+        if (path.startsWith(BUtility.F_Widget_RES_SCHEMA)) {
+            //为res对应的文件生成一个临时文件到系统中
+            File dir = new File(Environment.getExternalStorageDirectory(),
+                    File.separator + "temp");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            } else {
+                //及时清理这个缓存文件夹中的数据
+                for (File file: dir.listFiles()) {
+                    file.delete();
+                }
+            }
+            File destFile = new File(dir, fileName);
+            try {
+                destFile.deleteOnExit();
+                destFile.createNewFile();
+            } catch (IOException e) {
+                Log.i(TAG, "[Create File]" +  e.getMessage());
+                return null;
+            }
+            if (realPath.startsWith("/data")){
+                CommonUtil.copyFile(new File(realPath), destFile);
+                return destFile.getAbsolutePath();
+            }else if( CommonUtil.saveFileFromAssetsToSystem(mContext, realPath, destFile)) {
+                return destFile.getAbsolutePath();
+            } else {
+                Log.i(TAG, "[getRealPath error]");
+                return null;
+            }
+        } else {
+            return realPath;
         }
     }
 }
