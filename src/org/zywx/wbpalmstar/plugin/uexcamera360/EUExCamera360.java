@@ -28,6 +28,7 @@ public class EUExCamera360 extends EUExBase {
 
     private static final String TAG = "EUExCamera360";
     private EditDataVO mEditData = null;
+    private int mCurrentId = 0;
 
     public EUExCamera360(Context context, EBrowserView eBrowserView) {
         super(context, eBrowserView);
@@ -52,11 +53,14 @@ public class EUExCamera360 extends EUExBase {
         startActivityForResult(intent, JsConst.REQUEST_CODE_PICK);
     }
 
-    public void edit(String[] params) {
+    public String edit(String[] params) {
         String path = null;
         if (params != null && params.length > 0) {
             String json = params[0];
             mEditData = DataHelper.gson.fromJson(json, EditDataVO.class);
+            if (TextUtils.isEmpty(mEditData.getId())){
+                mEditData.setId(generateId());
+            }
             path = mEditData.getImgSrcPath();
             if (mEditData.isSaveToGallery()){
                 mEditData.setImgSavePath(null);
@@ -65,7 +69,7 @@ public class EUExCamera360 extends EUExBase {
                     ResultEditVO result = new ResultEditVO();
                     result.setErrorCode(JsConst.CALLBACK_EDIT_ERROR_CODE_OUTPUT_ERROR);
                     callBackEditResult(result);
-                    return;
+                    return null;
                 }else{
                     String realPath = BUtility.makeRealPath(
                             BUtility.makeUrl(mBrwView.getCurrentUrl(), mEditData.getImgSavePath()),
@@ -78,7 +82,7 @@ public class EUExCamera360 extends EUExBase {
                             ResultEditVO result = new ResultEditVO();
                             result.setErrorCode(JsConst.CALLBACK_EDIT_ERROR_CODE_OUTPUT_ERROR);
                             callBackEditResult(result);
-                            return;
+                            return null;
                         }
                     }
                     mEditData.setImgSavePath(realPath);
@@ -100,6 +104,12 @@ public class EUExCamera360 extends EUExBase {
                 startEdit(path);
             }
         }
+        return mEditData.getId();
+    }
+
+    private String generateId(){
+        mCurrentId++;
+        return String.valueOf(mCurrentId);
     }
 
     private void startEdit(final String srcPath) {
