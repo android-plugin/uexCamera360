@@ -29,6 +29,7 @@ public class EUExCamera360 extends EUExBase {
     private static final String TAG = "EUExCamera360";
     private EditDataVO mEditData = null;
     private int mCurrentId = 0;
+    private String cbEditFun;
 
     public EUExCamera360(Context context, EBrowserView eBrowserView) {
         super(context, eBrowserView);
@@ -57,6 +58,9 @@ public class EUExCamera360 extends EUExBase {
         String path = null;
         if (params != null && params.length > 0) {
             String json = params[0];
+            if (params.length > 1){
+                cbEditFun = params[1];
+            }
             mEditData = DataHelper.gson.fromJson(json, EditDataVO.class);
             if (TextUtils.isEmpty(mEditData.getId())){
                 mEditData.setId(generateId());
@@ -161,7 +165,11 @@ public class EUExCamera360 extends EUExBase {
 
     private void callBackEditResult(ResultEditVO result){
         result.setId(mEditData.getId());
-        callBackPluginJs(JsConst.CALLBACK_EDIT, DataHelper.gson.toJson(result));
+        if (!TextUtils.isEmpty(cbEditFun)){
+            callbackToJs(Integer.parseInt(cbEditFun), false, DataHelper.gson.toJsonTree(result));
+        }else{
+            callBackPluginJs(JsConst.CALLBACK_EDIT, DataHelper.gson.toJson(result));
+        }
     }
 
     private void callBackPluginJs(String methodName, String jsonData){

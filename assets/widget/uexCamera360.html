@@ -17,7 +17,9 @@
             imgSavePath:savePath //编辑后的图片存储路径
         };
         var data = JSON.stringify(params);
-        var resultId = uexCamera360.edit(data);
+        var resultId = uexCamera360.edit(data, function(data){
+            alert("cbEditFun:" + JSON.stringify(data));
+        });
         console.log("resultId:" + resultId);
     }
 
