@@ -2,6 +2,7 @@
 <uexplugins>
     <plugin
         uexName="uexCamera360" version="3.0.0" build="0">
-        <info>0:Camera360图片编辑插件</info>
+        <info>1:修复了在部份手机上图片路径解析出错问题</info>
+        <build>0:Camera360图片编辑插件</build>
     </plugin>
 </uexplugins>
